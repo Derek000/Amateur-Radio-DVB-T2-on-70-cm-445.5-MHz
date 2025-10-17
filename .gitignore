@@ -1,0 +1,9 @@
+.DS_Store
+*.pyc
+__pycache__/
+build/
+dist/
+*.swp
+*.zip
+*.tar.gz
+.grc_gnuradio/

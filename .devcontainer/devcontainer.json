@@ -1,0 +1,8 @@
+{
+  "name": "ham-dvbt2-445_5mhz",
+  "image": "ghcr.io/gnuradio/gnuradio:3.10",
+  "features": {},
+  "postCreateCommand": "bash -lc 'apt-get update && apt-get install -y git cmake g++ libboost-all-dev libvolk2-dev soapysdr-tools soapysdr-module-lms7 limesuite libiio-utils gnuradio-dev && git clone https://github.com/drmpeg/gr-dvbt2.git /opt/gr-dvbt2 && cd /opt/gr-dvbt2 && mkdir -p build && cd build && cmake .. && make -j$(nproc) && make install && ldconfig'",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+  "workspaceFolder": "/workspace"
+}
