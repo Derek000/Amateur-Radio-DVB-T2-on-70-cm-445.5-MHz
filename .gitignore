@@ -7,3 +7,5 @@ dist/
 *.zip
 *.tar.gz
 .grc_gnuradio/
+reports/
+metrics/

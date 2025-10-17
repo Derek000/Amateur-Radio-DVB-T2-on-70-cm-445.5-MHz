@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <flow_graph>
   <block><key>options</key>
-    <param><key>title</key><value>DVB-T2 RX @445.5MHz (7MHz)</value></param>
+    <param><key>title</key><value>DVB-T2 RX (GR blocks) @445.5MHz, 7MHz</value></param>
     <param><key>author</key><value>Madrock Advisory</value></param>
   </block>
   <block><key>variable</key><param><key>id</key><value>rf_freq</value></param><param><key>value</key><value>445.5e6</value></param></block>

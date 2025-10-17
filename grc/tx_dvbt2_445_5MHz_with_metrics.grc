@@ -7,7 +7,6 @@
   <block><key>variable</key><param><key>id</key><value>rf_freq</value></param><param><key>value</key><value>445.5e6</value></param></block>
   <block><key>variable</key><param><key>id</key><value>chan_bw</value></param><param><key>value</key><value>7e6</value></param></block>
   <block><key>variable</key><param><key>id</key><value>samp_rate</value></param><param><key>value</key><value>4e6</value></param></block>
-
   <block>
     <key>blocks_udp_source</key>
     <param><key>id</key><value>udp_ts_in</value></param>
@@ -16,7 +15,6 @@
     <param><key>port</key><value>5004</value></param>
     <param><key>payload_size</key><value>1472</value></param>
   </block>
-
   <block>
     <key>dvbt2_bbframe_enc</key>
     <param><key>id</key><value>bbframe</value></param>
@@ -31,7 +29,6 @@
     <param><key>guard_interval</key><value>0</value></param>
     <param><key>bandwidth</key><value>chan_bw</value></param>
   </block>
-
   <block>
     <key>fir_filter_xxx</key>
     <param><key>id</key><value>tx_bpf</value></param>
@@ -39,7 +36,6 @@
     <param><key>decim</key><value>1</value></param>
     <param><key>taps</key><value>firdes.low_pass(1.0, samp_rate, 3.3e6, 0.4e6, firdes.WIN_HAMMING)</value></param>
   </block>
-
   <block>
     <key>soapy_sink</key>
     <param><key>id</key><value>lime_sink</value></param>
@@ -49,7 +45,6 @@
     <param><key>bandwidth</key><value>7.5e6</value></param>
     <param><key>gain</key><value>-6</value></param>
   </block>
-
   <block>
     <key>iio_pluto_sink</key>
     <param><key>id</key><value>pluto_sink</value></param>
@@ -59,9 +54,16 @@
     <param><key>bw</key><value>7.5e6</value></param>
     <param><key>rf_gain</key><value>-10</value></param>
   </block>
-
   <connection><source_block_id>udp_ts_in</source_block_id><source_key>0</source_key><sink_block_id>bbframe</sink_block_id><sink_key>in</sink_key></connection>
   <connection><source_block_id>bbframe</source_block_id><source_key>out</source_key><sink_block_id>ofdm</sink_block_id><sink_key>in</sink_key></connection>
+  <block><key>epy_block</key>
+    <param><key>id</key><value>mer_logger</value></param>
+    <param><key>source</key><value>grc/blocks/mer_evm_logger.py</value></param>
+    <param><key>class_name</key><value>mer_evm_logger</value></param>
+    <param><key>args</key><value>"metrics/tx_metrics.csv", 4096, "qpsk"</value></param>
+  </block>
+  <connection><source_block_id>ofdm</source_block_id><source_key>out</source_key><sink_block_id>mer_logger</sink_block_id><sink_key>in</sink_key></connection>
+  <connection><source_block_id>mer_logger</source_block_id><source_key>out</source_key><sink_block_id>tx_bpf</sink_block_id><sink_key>in</sink_key></connection>
   <connection><source_block_id>tx_bpf</source_block_id><source_key>out</source_key><sink_block_id>lime_sink</sink_block_id><sink_key>0</sink_key></connection>
   <connection><source_block_id>tx_bpf</source_block_id><source_key>out</source_key><sink_block_id>pluto_sink</sink_block_id><sink_key>0</sink_key></connection>
-<block><key>epy_block</key><param><key>id</key><value>mer_logger</value></param><param><key>source</key><value>grc/blocks/mer_evm_logger.py</value></param><param><key>class_name</key><value>mer_evm_logger</value></param><param><key>args</key><value>"metrics/tx_metrics.csv", 4096</value></param></block><connection><source_block_id>ofdm</source_block_id><source_key>out</source_key><sink_block_id>mer_logger</sink_block_id><sink_key>in</sink_key></connection><connection><source_block_id>mer_logger</source_block_id><source_key>out</source_key><sink_block_id>tx_bpf</sink_block_id><sink_key>in</sink_key></connection></flow_graph>
+</flow_graph>

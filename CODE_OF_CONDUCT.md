@@ -1,2 +1,2 @@
 # Code of Conduct
-We follow the Contributor Covenant. Be respectful and constructive. 
+Be respectful and constructive.
