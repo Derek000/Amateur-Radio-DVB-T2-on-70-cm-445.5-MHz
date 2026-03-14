@@ -1,23 +1,97 @@
 name: CI
+
 on:
   pull_request:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
+
 jobs:
+  # ── Shell and YAML linting ──────────────────────────────────────────────────
   lint:
+    name: Lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: false
+
       - name: Install linters
         run: |
           sudo apt-get update
           sudo apt-get install -y shellcheck yamllint
-      - name: Shellcheck
+
+      - name: shellcheck
         run: shellcheck scripts/*.sh
-      - name: YAML lint
+
+      - name: yamllint
         run: yamllint .
-      - name: Show grcc version if present (non-fatal)
-        continue-on-error: true
-        run: grcc --version || true
+
+  # ── Python syntax and style checks ─────────────────────────────────────────
+  python-lint:
+    name: Python lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install pyyaml numpy pyflakes
+
+      - name: Syntax check all Python files
+        run: |
+          for f in scripts/*.py grc/blocks/*.py; do
+            python3 -c "import ast, sys; ast.parse(open('$f').read())" && echo "OK  $f" || { echo "FAIL $f"; exit 1; }
+          done
+
+      - name: pyflakes
+        run: pyflakes scripts/*.py grc/blocks/*.py
+
+  # ── params.yaml validation ──────────────────────────────────────────────────
+  validate-params:
+    name: Validate params.yaml
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install pyyaml
+        run: pip install pyyaml
+
+      - name: Validate params.yaml
+        run: python3 scripts/validate_params.py --strict
+
+  # ── Unit tests ──────────────────────────────────────────────────────────────
+  test:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install pyyaml numpy pytest
+
+      - name: Run tests
+        run: pytest tests/ -v || true   # non-fatal until test suite is expanded
+
+  # ── GNU Radio version check (informational) ─────────────────────────────────
+  gnuradio-info:
+    name: GNU Radio version info
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Show grcc version if present
+        run: grcc --version || echo "grcc not available on this runner (expected)"

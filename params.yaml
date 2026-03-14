@@ -1,26 +1,35 @@
-rf_frequency_hz: 445500000
-channel_bandwidth_hz: 7000000
-constellation: QPSK
-code_rate: 1/2
-fft_size: 8192
-guard_interval: 1/32
-pilot_pattern: PP7
-plp_count: 1
+# DVB-T2 on 70 cm — 445.5 MHz / 7 MHz channel
+# For GNU Radio gr-dvbt2 with LimeSDR or PlutoSDR
+#
+# NOTE: sample_rate must be ≥ channel_bandwidth_hz × 1.1 (Nyquist + headroom).
+# For 7 MHz BW the minimum is ~7.7 Msps; 8 Msps is recommended.
+
+rf_frequency_hz: 445500000        # 445.5 MHz — 70 cm amateur ATV
+channel_bandwidth_hz: 7000000     # 7 MHz channel (valid DVB-T2 BW)
+constellation: QPSK               # QPSK / 16QAM / 64QAM / 256QAM
+code_rate: "1/2"                  # 1/2, 3/5, 2/3, 3/4, 4/5, 5/6
+fft_size: 8192                    # 1k/2k/4k/8k/16k/32k
+guard_interval: "1/32"            # 1/4, 19/128, 1/8, 19/256, 1/16, 1/32, 1/128
+pilot_pattern: PP7                # PP1–PP8 (PP7 suits 8k/GI 1/32)
+plp_count: 1                      # Number of PLPs (1 for simplex ATV)
 ldpc_bch: true
+
 device:
   tx:
-    type: lime_or_pluto
-    sample_rate: 4000000
-    gain_db: -6
-    rf_bw_hz: 7500000
+    type: lime_or_pluto           # set in GRC — disable the unused sink block
+    sample_rate: 8000000          # 8 Msps — sufficient for 7 MHz channel
+    gain_db: -6                   # back-off to keep shoulders ≤ −40 dBc
+    rf_bw_hz: 7500000             # RF filter BW ≈ 7.5 MHz
   rx:
     type: lime_or_pluto
-    sample_rate: 4000000
+    sample_rate: 8000000          # 8 Msps
     gain_db: 35
     rf_bw_hz: 7500000
+
 udp_ts_in:
   host: 127.0.0.1
   port: 5004
+
 udp_ts_out:
   host: 127.0.0.1
   port: 5006
